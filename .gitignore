@@ -164,3 +164,9 @@ cython_debug/
 
 # Temporary files
 tmp/
+
+# Parquet files
+*.parquet
+
+# CSV files
+*.csv

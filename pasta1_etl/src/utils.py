@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import boto3
 
 def get_s3_client() -> boto3.client:
@@ -13,7 +15,6 @@ def get_s3_client() -> boto3.client:
     except Exception as e:
         err_msg = f"Error creating S3 client: {e}"
         raise err_msg
-
 
 
 def list_s3_objects(bucket: str, prefix:str = '') -> list:
@@ -67,3 +68,58 @@ def list_parquet_files_in_bucket(bucket: str, prefix: str = '') -> list:
             parquet_files.append(obj)
 
     return sorted(parquet_files)
+
+
+def save_file_content_in_s3(bucket: str, path: str, file_content: str) -> None:
+    """
+        Save a string as a file in a given S3 bucket
+
+        Parameters:
+            bucket (str): The name of the S3 bucket to save the file
+            path (str): The path to save the file in the S3 bucket
+            file_content (str): The content of the file to be saved
+
+        Returns:
+            None
+    """
+
+    s3_client = get_s3_client()
+
+    try:
+        s3_client.put_object(Bucket=bucket, Key=path, Body=file_content)
+    except Exception as e:
+        err_msg = f"Error saving file in S3: {e}"
+        raise err_msg
+    
+
+def get_first_day_of_next_month(parquet_year_month: str) -> str:
+    """
+    Get the first day of the next month for the parquet file
+
+    Parameters:
+        parquet_year_month (str): The year and month of the parquet file in the format "YYYY-MM"
+
+    Returns:
+        str: The first day of the next month
+    """
+
+    parquet_date = datetime.strptime(f"{parquet_year_month}-01", "%Y-%m-%d")
+
+    return datetime(parquet_date.year + 1, 1, 1) if parquet_date.month == 12 else datetime(parquet_date.year, parquet_date.month + 1, 1)
+
+
+def get_date_minus_tolerance(parquet_year_month: str, pickup_date_tolerance_in_hours: int) -> str:
+    """
+    Get the date minus the tolerance in hours for the parquet file
+
+    Parameters:
+        parquet_year_month (str): The year and month of the parquet file in the format "YYYY-MM"
+        pickup_date_tolerance_in_hours (int): The tolerance in hours to subtract from the date
+
+    Returns:
+        str: The date minus the tolerance in hours
+    """
+
+    parquet_start_date = datetime.strptime(f"{parquet_year_month}-01", "%Y-%m-%d")
+
+    return parquet_start_date - timedelta(hours=pickup_date_tolerance_in_hours)
