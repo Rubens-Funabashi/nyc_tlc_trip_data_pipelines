@@ -9,12 +9,8 @@ def get_s3_client() -> boto3.client:
         Returns:
             boto3.client: A boto3 client for S3
     """
-    try:
-        s3_client = boto3.client('s3')
-        return s3_client
-    except Exception as e:
-        err_msg = f"Error creating S3 client: {e}"
-        raise err_msg
+    s3_client = boto3.client('s3')
+    return s3_client
 
 
 def list_s3_objects(bucket: str, prefix:str = '') -> list:
@@ -85,11 +81,7 @@ def save_file_content_in_s3(bucket: str, path: str, file_content: str) -> None:
 
     s3_client = get_s3_client()
 
-    try:
-        s3_client.put_object(Bucket=bucket, Key=path, Body=file_content)
-    except Exception as e:
-        err_msg = f"Error saving file in S3: {e}"
-        raise err_msg
+    s3_client.put_object(Bucket=bucket, Key=path, Body=file_content)
     
 
 def get_first_day_of_next_month(parquet_year_month: str) -> str:
