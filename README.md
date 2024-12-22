@@ -2,6 +2,7 @@
 ![nyc_trip_record_pipeline](nyc_trip_record_pipeline.png)
 
 ## Local run
+Disclaimer: Development was made in Windows
 
 ### Environment Setup
 To run the pipelines in the repository in local environment:
