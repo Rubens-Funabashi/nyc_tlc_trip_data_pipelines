@@ -20,13 +20,18 @@ To run the pipelines in the repository in local environment:
 | END_DATE    | YYYY-MM of the end date of your pipeline ("2023-05" for this exercise)    |
 | FILE_PREFIX    | As per the assumptions below, the parquet files have a naming standard. "yellow_tripdata" is the standard one, but adjust according to your parquet files |
 | PICKUP_DATE_TOLERANCE_IN_HOURS    | As per the assumptions below, set a value of tolerance to filter out outliers |
+| DOCKER_HOST_IP    | Your Docker Host IP to avoid connection issues |
 
 - Create a new virtual environment
 - Run `pip install -r requirements.txt`
 
 ### Pipelines Scripts
-- Running `py pasta1_etl/src/main.py` will read the parquet files from the Input bucket, create a raw/bronze Delta Table and a processed/gold Delta Table in the output bucket
-- Running `py pasta2_analytics/src/main.py` will read the processed/gold Delta Table, run 2 analytics queries and save the results in the output bucket
+- ETL pipeline:
+    - In Dockerfile, uncomment the line `CMD python3 -u pasta1_etl/src/main.py ` while keeping the next line commented
+    - This will run the file `pasta1_etl/src/main.py`, which will read the parquet files from the Input bucket, create a raw/bronze Delta Table and a processed/gold Delta Table in the output bucket
+- Analytics:
+    - In Dockerfile, uncomment the line `CMD python3 -u pasta2_analytics/src/main.py ` while keeping the next line commented
+    - This will run the file `pasta2_analytics/src/main.py`, which will read the processed/gold Delta Table, run 2 analytics queries and save the results in the output bucket
 
 ## Assumptions
 - It is being assumed that the parquet files are being consumed from an S3 bucket. The team that manages that bucket is the same team responsible for creating the pipelines in the repo. This is relevant because, if it was an external bucket or another team's bucket, I would highly recommend making a copy of the parquet files to the output/destination bucket in this repository for auditing purposes.
@@ -36,3 +41,10 @@ To run the pipelines in the repository in local environment:
     - If you read the parquets from January to May, you will also find data from June, July, August and September. For each parquet, data that exceeds the corresponding month will also be considered outliers and will be filtered out. For example, if in `yellow_tripdata_2023-02.parquet` there is data from March, those will be removed.
 - Analyzing the timestamp columns, it seems that it is for the GMT timezone. I tried using NYC timezone, GMT-5, but the timestamps did not seem correct. I contacted the data owners, but haven't heard back. I am assuming it's GMT.
 - I'm assuming the Hive instance is already created somewhere else and all that is needed is to provide the .sql file with the query to create the tables.
+
+
+## Future improvements (in no particular order)
+- Improvements in Docker
+    - Dockerfile: Instead of having to manually (un)comment lines to decide which script to run, find a better strategy
+- Unit tests
+    - In order to guarantee I would have a functional end-to-end pipeline, I decided to lower the priority on writing unit tests. While this is not ideal, I will make sure to have the pipeline finished.
