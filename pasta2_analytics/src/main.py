@@ -23,14 +23,14 @@ def main():
             ORDER BY pickup_year, pickup_month;
         """
     )
-    yearly_monthly_avg_total_amount.write.format("csv").option("header", "true").mode("overwrite").save("s3a://{DESTINATION_S3_BUCKET}/analytics/avg_total_amount.csv")
+    yearly_monthly_avg_total_amount.write.format("csv").option("header", "true").mode("overwrite").save(f"s3a://{DESTINATION_S3_BUCKET}/analytics/avg_total_amount.csv")
     
     
     # For each day and hour, calculate the average passenger count
     # The column avg_passenger_count_per_day is the average passenger count for each day (which is why it is the same value for all the hours of the day)
     # The column avg_passenger_count_per_hour is the average passenger count for each hour of that day
     daily_hourly_avg_passenger_count_df = spark.sql(
-        """
+        f"""
             WITH yellow_tripdata_window AS (
                 SELECT
                     pickup_year,
@@ -47,7 +47,7 @@ def main():
             ORDER BY pickup_year, pickup_month, pickup_day, pickup_hour;
         """
     )
-    daily_hourly_avg_passenger_count_df.write.format("csv").option("header", "true").mode("overwrite").save("s3a://{DESTINATION_S3_BUCKET}/analytics/avg_passenger_count.csv")
+    daily_hourly_avg_passenger_count_df.write.format("csv").option("header", "true").mode("overwrite").save(f"s3a://{DESTINATION_S3_BUCKET}/analytics/avg_passenger_count.csv")
 
 
 if __name__ == "__main__":
@@ -77,4 +77,10 @@ if __name__ == "__main__":
     spark = configure_spark_with_delta_pip(builder, my_packages).getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
 
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
+    finally:
+        spark.stop()
