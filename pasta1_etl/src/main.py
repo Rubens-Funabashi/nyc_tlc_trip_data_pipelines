@@ -150,7 +150,7 @@ def create_bronze_layer() -> tuple[list[str], list[str]]:
 
     for counter in range(0, len(parquet_objects)):
         try:
-            parquet_year_month = (parquet_objects[counter].lstrip(f"{FILE_PREFIX}_").rstrip(".parquet"))  # Results in 'YYYY-MM'
+            parquet_year_month = (parquet_objects[counter].replace(f"{FILE_PREFIX}_","").replace(".parquet",""))  # Results in 'YYYY-MM'
             
             if parquet_year_month < START_DATE:
                 print(f">> Skipping {parquet_objects[counter]} because {parquet_year_month} is before the start date {START_DATE}")
