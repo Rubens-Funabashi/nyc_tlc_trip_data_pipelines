@@ -24,6 +24,7 @@ def main():
         """
     )
     yearly_monthly_avg_total_amount.write.format("csv").option("header", "true").mode("overwrite").save(f"s3a://{DESTINATION_S3_BUCKET}/analytics/avg_total_amount.csv")
+    print(f"Yearly monthly average total amount saved at s3a://{DESTINATION_S3_BUCKET}/analytics/avg_total_amount.csv")
     
     
     # For each day and hour, calculate the average passenger count
@@ -48,6 +49,7 @@ def main():
         """
     )
     daily_hourly_avg_passenger_count_df.write.format("csv").option("header", "true").mode("overwrite").save(f"s3a://{DESTINATION_S3_BUCKET}/analytics/avg_passenger_count.csv")
+    print(f"Daily hourly average passenger count saved at s3a://{DESTINATION_S3_BUCKET}/analytics/avg_passenger_count.csv")
 
 
 if __name__ == "__main__":
