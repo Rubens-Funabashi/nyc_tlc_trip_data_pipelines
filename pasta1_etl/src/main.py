@@ -151,12 +151,12 @@ def create_bronze_layer() -> tuple[list[str], list[str]]:
     for counter in range(0, len(parquet_objects)):
         try:
             parquet_year_month = (parquet_objects[counter].lstrip(f"{FILE_PREFIX}_").rstrip(".parquet"))  # Results in 'YYYY-MM'
-
+            
             if parquet_year_month < START_DATE:
-                print(f">> Skipping {parquet_objects[counter]} because it is before the start date {START_DATE}")
+                print(f">> Skipping {parquet_objects[counter]} because {parquet_year_month} is before the start date {START_DATE}")
                 continue
             elif parquet_year_month > END_DATE:
-                print(f">> Skipping {parquet_objects[counter]} because it is after the end date {END_DATE}")
+                print(f">> Skipping {parquet_objects[counter]} because {parquet_year_month} is after the end date {END_DATE}")
                 continue
 
             print(f">> Processing {counter + 1} out of {len(parquet_objects)}: {parquet_objects[counter]}")
@@ -166,6 +166,7 @@ def create_bronze_layer() -> tuple[list[str], list[str]]:
             # Cast all columns to the specified types in the schema
             for column_name, column_type in YELLOW_TRIP_SCHEMA[f"{FILE_PREFIX}_bronze"]["columns"].items():
                 df = df.withColumn(column_name, col(column_name).cast(column_type))
+            print("\t>> Casted columns to the specified types")
 
             # Filter out rows with dates prior to {parquet_year_month} minus the tolerance
             # We are filtering out rows here to make sure we can correctly identify outliers
@@ -293,4 +294,10 @@ if __name__ == "__main__":
 
     spark.sparkContext.setLogLevel("ERROR")
 
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
+    finally:
+        spark.stop()
