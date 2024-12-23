@@ -11,7 +11,7 @@
 - I'm assuming the Hive instance is already created somewhere else and all that is needed is to provide the .sql file with the query to create the tables.
 
 ## Local run
-Disclaimer: Development was made in Windows
+Disclaimer: Development was made in Windows. Even though there is a Docker setup, differences in virtualization between Windows and Linux/MacOS might affect the execution of the script.
 
 ### Environment Setup
 To run the pipelines in the repository in local environment:
