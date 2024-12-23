@@ -21,7 +21,7 @@ ENV PATH="$SPARK_HOME/bin:$PATH"
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Download Hadoop and Iceberg JARs
+# Download Hadoop and AWS JARs
 RUN wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.2.2/hadoop-aws-3.2.2.jar -P /opt/spark/jars/
 RUN wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.271/aws-java-sdk-bundle-1.11.271.jar -P /opt/spark/jars/
 
