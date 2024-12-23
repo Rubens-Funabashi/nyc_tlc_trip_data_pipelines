@@ -1,0 +1,30 @@
+services:
+  spark:
+    build: .
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+        reservations:
+          memory: 8G
+    container_name: spark
+    environment:
+      - SOURCE_S3_BUCKET=${SOURCE_S3_BUCKET}
+      - DESTINATION_S3_BUCKET=${DESTINATION_S3_BUCKET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - START_DATE=${START_DATE}
+      - END_DATE=${END_DATE}
+      - FILE_PREFIX=${FILE_PREFIX}
+      - PICKUP_DATE_TOLERANCE_IN_HOURS=${PICKUP_DATE_TOLERANCE_IN_HOURS}
+    networks:
+      - bridge-net
+    extra_hosts:
+      - "host.docker.internal:${DOCKER_HOST_IP}"
+    ports:
+      - "8080:8080"
+
+networks:
+  bridge-net:
+    driver: bridge
